@@ -1,0 +1,32 @@
+name: Step 0, Start
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  get_current_step:
+    name: Check current step number
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - id: get_step
+        run: echo "::set-output name=current_step::$(cat ./.github/script/STEP)"
+    outputs:
+      current_step: ${{ steps.get_step.outputs.current_step }}
+
+  on_start:
+    name: On start
+    needs: get_current_step
+    runs-on: ubuntu-latest
+    steps:
+      - name: Test
+        run: |
+          echo "Current step: ${{ needs.get_current_step.outputs.current_step }}"
+          echo "Repo owner: ${{ github.repository_owner }}"
